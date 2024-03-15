@@ -39,7 +39,10 @@ class Segmentator:
         masks = []
         for prompt in prompts:
             mask, _, _, _ = self.model.predict(original_image, prompt)
-            masks.append(mask[0].numpy().astype(np.uint8))
+            np_mask = mask[0].numpy()
+            kernel = np.ones(self.config['dilation_kernel'], np.uint8)
+            dilated_mask = cv2.dilate(np_mask.astype(np.uint8), kernel, iterations=1)
+            masks.append(dilated_mask)
         return masks
     
     def _get_masks_fastsam(self, image_path: str, prompts: list):

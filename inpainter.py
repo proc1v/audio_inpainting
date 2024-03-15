@@ -44,7 +44,7 @@ class Inpainter:
     def _lama_inpaint(self, image: Image.Image, masks: list):
         result_image = image
         for mask in masks:
-            single_channel_mask = Image.fromarray(mask).convert('L')
+            single_channel_mask = Image.fromarray(mask * 255).convert('L')
             result_image = self.pipeline(result_image, single_channel_mask)
         return result_image
 
