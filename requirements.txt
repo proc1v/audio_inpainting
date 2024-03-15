@@ -1,0 +1,14 @@
+git+https://github.com/CASIA-IVA-Lab/FastSAM.git
+
+# From FastSAM requirements
+-r FastSAM/requirements.txt
+
+# Direct GitHub repository installations
+git+https://github.com/openai/CLIP.git
+
+# Specific package versions and additional packages
+diffusers==0.11.1
+transformers
+ftfy
+gradio
+accelerate
