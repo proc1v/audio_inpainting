@@ -1,0 +1,5 @@
+Remove the red car parked next to the building in the background.
+Erase the person walking their dog on the sidewalk.
+Remove the trash can.
+Remove  the bicycle leaning against the fence.
+Inpaint the power tower.
