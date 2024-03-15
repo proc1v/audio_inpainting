@@ -1,78 +1,53 @@
+import torch
 import gradio as gr
+import numpy as np
 import PIL
-import numpy as np
-import io
-from pydub import AudioSegment
-from pydub.playback import play
-import speech_recognition as sr
 
+from speech_recognizer import SpeechRecognizer
+from llm_manager import LLM_Manager
+from inpainter import Inpainter, InpaintBackend
+from segmentator import Segmentator, SegmentBackend
 
-import gradio as gr
-from transformers import pipeline
-import numpy as np
-
-transcriber = pipeline("automatic-speech-recognition", model="openai/whisper-base.en")
-
-def transcribe(audio):
-    sr, y = audio
-    y = y.mean(axis=1)
-    y = y.astype(np.float32)
-    y /= np.max(np.abs(y))
-
-    return transcriber({"sampling_rate": sr, "raw": y})["text"]
-
-
+device = "cuda" if torch.cuda.is_available() else "cpu"
 
 # Function to process the image and audio inputs
-# def process_input(image, audio):
-#     # Load the image from input
-#     try:
-#         image = PIL.Image.open(io.BytesIO(image))
-#     except:
-#         # make random image if image is not provided
-#         image = PIL.Image.fromarray(np.random.randint(0, 255, (256, 256, 3), dtype=np.uint8))
-        
-#     #print(*audio)
-#     # Convert audio from bytes to AudioSegment
-#     audio = AudioSegment.from_file(io.BytesIO(audio[-1]))
+def process_input(image, audio):
+    print(device)
+    # Speech recognition
+    recognizer = SpeechRecognizer(device=device)
+    transcribed_text = recognizer.transcribe(audio)
     
-#     # Play the audio to let user describe what to remove
-#     play(audio)
+    llm_manager = LLM_Manager()
+    extracted_entities = llm_manager.run_chain(transcribed_text)['output']
     
-#     # Speech recognition
-#     recognizer = sr.Recognizer()
-#     with io.BytesIO(audio.export(format="wav")) as wav_file:
-#         wav_file.seek(0)
-#         audio_data = recognizer.record(wav_file)
+    original_image = PIL.Image.open(path_to_image)
     
-#     try:
-#         # Recognize speech from audio
-#         transcribed_text = recognizer.recognize_google(audio_data)
-#     except sr.UnknownValueError:
-#         transcribed_text = "Speech recognition could not understand the audio"
-#     except sr.RequestError as e:
-#         transcribed_text = f"Error: {str(e)}"
+    lang_segmentator = Segmentator(SegmentBackend.LangSAM)
+    lang_masks = lang_segmentator.generate_masks(path_to_image, extracted_entities)
     
-#     # Inpainting process (dummy process)
-#     # Here, we will just blur the image as an example
-#     image_array = np.array(image)
-#     blurred_image = PIL.Image.fromarray(image_array)  # Placeholder for inpainting logic
+    lama_inpainter = Inpainter(InpaintBackend.LaMa)
+    lang_lama_result = lama_inpainter.inpaint(original_image, lang_masks)    
     
-#     return blurred_image, transcribed_text
+    return lang_lama_result, str(extracted_entities)
 
 # Gradio interface
 inputs = [
-    #gr.Image(label="Upload an image"),
+    gr.Image(label="Upload an image"),
     gr.Audio(label="Record audio to describe what to remove")
 ]
 
 outputs = [
-    #gr.Image(label="Result Image"),
+    gr.Image(label="Result Image"),
     gr.Textbox(label="Transcribed Text", type="text", lines=5)
 ]
 
 title = "Image Inpainting Demo"
 description = "Upload an image and record audio to describe what to remove. The result will be the inpainted image."
 
-# Create the Gradio app
-gr.Interface(fn=transcribe, inputs=inputs, outputs=outputs, title=title, description=description).launch()
+with gr.Blocks() as demo:
+    # Create the Gradio app
+    gr.Interface(fn=process_input, inputs=inputs, outputs=outputs, title=title, description=description)
+    
+    
+if __name__ == "__main__":
+    demo.launch()
