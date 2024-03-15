@@ -1,3 +1,5 @@
+import shutil
+
 import torch
 import gradio as gr
 import numpy as np
@@ -17,16 +19,28 @@ def process_input(image, audio):
     recognizer = SpeechRecognizer(device=device)
     transcribed_text = recognizer.transcribe(audio)
     
-    llm_manager = LLM_Manager()
-    extracted_entities = llm_manager.run_chain(transcribed_text)['output']
+    print("#"*50)
+    print("Transcribed Text:", transcribed_text)
     
-    original_image = PIL.Image.open(path_to_image)
+    llm_manager = LLM_Manager()
+    llm_output = llm_manager.run_chain(transcribed_text)
+    
+    print("#"*50)
+    print("LLM Output:", llm_output)
+    
+    extracted_entities = llm_output['output']
+    
+    original_image = PIL.Image.fromarray(image)
+    path_to_image = "temp.jpg"
+    original_image.save(path_to_image)
     
     lang_segmentator = Segmentator(SegmentBackend.LangSAM)
     lang_masks = lang_segmentator.generate_masks(path_to_image, extracted_entities)
     
     lama_inpainter = Inpainter(InpaintBackend.LaMa)
     lang_lama_result = lama_inpainter.inpaint(original_image, lang_masks)    
+    
+    shutil.rmtree(path_to_image)
     
     return lang_lama_result, str(extracted_entities)
 
