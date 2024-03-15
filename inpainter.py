@@ -56,7 +56,8 @@ class Inpainter:
         for mask, prompt in zip(masks, prompts):
             if mask.sum() < self.config['mask_threshold']: continue
             mask_image = Image.fromarray(mask * 255).convert("RGB").resize((512, 512))
-            inpainted_image = self._inpaint_single(image, mask_image, prompt=prompt)
+            cut_image = self._cut_mask(image, mask_image)
+            inpainted_image = self._inpaint_single(cut_image, mask_image, prompt=prompt)
             image = self._restore_unmasked(image, inpainted_image, mask_image)
         return image.resize(original_size)
 
@@ -82,5 +83,14 @@ class Inpainter:
         
         mask_array = mask_array.astype(bool)
         original_array[mask_array] = edited_array[mask_array]
+        original_image = Image.fromarray(original_array)
+        return original_image
+    
+    def _cut_mask(self, original: Image.Image, mask: Image.Image):
+        mask_array =  np.array(mask)
+        original_array = np.array(original)
+        
+        mask_array = mask_array.astype(bool)
+        original_array[mask_array] = 0
         original_image = Image.fromarray(original_array)
         return original_image
