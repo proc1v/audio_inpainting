@@ -21,6 +21,12 @@ RUN git clone https://github.com/CASIA-IVA-Lab/FastSAM.git
 RUN wget https://huggingface.co/spaces/An-619/FastSAM/resolve/main/weights/FastSAM.pt
 RUN pip install -r FastSAM/requirements.txt
 
+RUN pip install git+https://github.com/openai/CLIP.git
+RUN pip install -U diffusers==0.11.1 transformers ftfy gradio accelerate
+RUN pip install torch torchvision
+RUN pip install -U git+https://github.com/luca-medeiros/lang-segment-anything.git
+RUN pip install simple-lama-inpainting
+
 # Copy the current directory contents into the container at /app
 COPY . /app
 
