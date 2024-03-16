@@ -60,12 +60,12 @@ title = "Image Inpainting Demo"
 description = "Upload an image and record audio to describe what to remove. The result will be the inpainted image."
 
 examples = [
-    ["data\\red_car.jpg", "data\\red_car_prompt.mp3"],
-    ["data\\woman_dog_running.jpg", "data\\woman_prompt.mp3"],
-    ["data\\woman_dog_running.jpg", "data\\dog_prompt.mp3"],
-    ["data\\parrot.jpg", "data\\parrot_prompt.mp3"],
-    ["data\\man_dog_running.jpg", "data\\man_dog_prompt.mp3"],
-    ["data\\woman_in_city.jpg", "data\\woman_in_city_prompt.mp3"]
+    ["data/red_car.jpg", "data/red_car_prompt.mp3"],
+    ["data/woman_dog_running.jpg", "data/woman_prompt.mp3"],
+    ["data/woman_dog_running.jpg", "data/dog_prompt.mp3"],
+    ["data/parrot.jpg", "data/parrot_prompt.mp3"],
+    ["data/man_dog_running.jpg", "data/man_dog_prompt.mp3"],
+    ["data/woman_in_city.jpg", "data/woman_in_city_prompt.mp3"]
 ]
 
 with gr.Blocks() as demo:
