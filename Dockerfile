@@ -1,4 +1,4 @@
-FROM nvidia/cuda:12.2.0-base-ubuntu22.04
+FROM nvidia/cuda:12.2.0-devel-ubuntu22.04
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -18,8 +18,8 @@ WORKDIR /app
 
 # Install Python dependencies
 RUN git clone https://github.com/CASIA-IVA-Lab/FastSAM.git
-RUN wget https://huggingface.co/spaces/An-619/FastSAM/resolve/main/weights/FastSAM.pt
-RUN pip install -r FastSAM/requirements.txt
+#RUN wget https://huggingface.co/spaces/An-619/FastSAM/resolve/main/weights/FastSAM.pt
+#RUN pip install -r FastSAM/requirements.txt
 
 RUN pip install git+https://github.com/openai/CLIP.git
 RUN pip install -U diffusers==0.11.1 transformers ftfy gradio accelerate

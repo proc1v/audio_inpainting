@@ -1,4 +1,5 @@
 import shutil
+import os
 
 import torch
 import gradio as gr
@@ -40,7 +41,7 @@ def process_input(image, audio):
     lama_inpainter = Inpainter(InpaintBackend.LaMa)
     lang_lama_result = lama_inpainter.inpaint(original_image, lang_masks)    
     
-    shutil.rmtree(path_to_image)
+    os.remove(path_to_image)
     
     return lang_lama_result, str(extracted_entities)
 

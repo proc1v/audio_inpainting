@@ -2,7 +2,7 @@ import numpy as np
 import torch
 from PIL import Image
 import cv2
-from FastSAM.fastsam import FastSAM, FastSAMPrompt
+#from FastSAM.fastsam import FastSAM, FastSAMPrompt
 from lang_sam import LangSAM
 from enum import Enum, auto
 
