@@ -37,8 +37,9 @@ class Segmentator:
         
     def _get_masks_langsam(self, image_path: str, prompts: list):
         masks = []
+        image = Image.open(image_path)
         for prompt in prompts:
-            mask, _, _, _ = self.model.predict(original_image, prompt)
+            mask, _, _, _ = self.model.predict(image, prompt)
             np_mask = mask[0].numpy()
             kernel = np.ones(self.config['dilation_kernel'], np.uint8)
             dilated_mask = cv2.dilate(np_mask.astype(np.uint8), kernel, iterations=1)

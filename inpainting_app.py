@@ -35,7 +35,7 @@ def process_input(image, audio):
     original_image.save(path_to_image)
     
     lang_segmentator = Segmentator(SegmentBackend.LangSAM)
-    lang_masks = lang_segmentator.generate_masks(path_to_image, extracted_entities)
+    lang_masks = lang_segmentator.get_masks(path_to_image, extracted_entities)
     
     lama_inpainter = Inpainter(InpaintBackend.LaMa)
     lang_lama_result = lama_inpainter.inpaint(original_image, lang_masks)    
@@ -64,4 +64,4 @@ with gr.Blocks() as demo:
     
     
 if __name__ == "__main__":
-    demo.launch()
+    demo.launch(share=True)
